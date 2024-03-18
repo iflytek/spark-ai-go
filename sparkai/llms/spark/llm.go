@@ -2,7 +2,7 @@ package spark
 
 import (
 	"errors"
-	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/internal/sparkclient"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/client/sparkclient"
 	"net/http"
 	"os"
 )

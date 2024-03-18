@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/iflytek/spark-ai-go/sparkai/llms/spark"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/client/sparkclient"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"os"
 	"testing"
 
@@ -51,36 +53,35 @@ func TestSpark(t *testing.T) {
 
 }
 
-//
-//func TestLLMClientStream(t *testing.T) {
-//	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
-//	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
-//	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
-//	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
-//	SPARK_DOMAIN := "10245"
-//	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
-//	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
-//	ctx := context.Background()
-//	r := &sparkclient.ChatRequest{
-//		Domain: &SPARK_DOMAIN,
-//		Messages: []messages.ChatMessage{
-//			&messages.GenericChatMessage{
-//				Role:    "user",
-//				Content: "帮我润色并简化这句话: 国内科技大厂，创业公司都在演进大模型AI Agent且AI Agent框架仍然处于发展初期，采用开源化的AIAgent演进路线有助于快速构建影响力\n",
-//			},
-//		},
-//	}
-//	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
-//		fmt.Print(msg.GetContent())
-//		return nil
-//	})
-//	if err != nil {
-//		fmt.Print(err.Error())
-//		return
-//	}
-//
-//}
-//
+func TestLLMClientStream(t *testing.T) {
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
+	SPARK_DOMAIN := "10245"
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := spark.NewClient(spark.WithBaseURL(SPARK_API_BASE), spark.WithApiKey(SPARK_API_KEY), spark.WithApiSecret(SPARK_API_SECRET), spark.WithAppId(SPARK_APP_ID), spark.WithAPIDomain(SPARK_DOMAIN))
+	ctx := context.Background()
+	r := &sparkclient.ChatRequest{
+		Domain: &SPARK_DOMAIN,
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
+				Role:    "user",
+				Content: "帮我润色并简化这句话: 国内科技大厂，创业公司都在演进大模型AI Agent且AI Agent框架仍然处于发展初期，采用开源化的AIAgent演进路线有助于快速构建影响力\n",
+			},
+		},
+	}
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
+		fmt.Print(msg.GetContent())
+		return nil
+	})
+	if err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+}
+
 //func TestLLMFunctionCall(t *testing.T) {
 //	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
 //	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)

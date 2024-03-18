@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/iflytek/spark-ai-go/sparkai/callbacks"
 	"github.com/iflytek/spark-ai-go/sparkai/llms"
-	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/internal/sparkclient"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/client/sparkclient"
 	"github.com/iflytek/spark-ai-go/sparkai/messages"
 )
 

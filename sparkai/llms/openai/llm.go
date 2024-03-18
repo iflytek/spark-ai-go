@@ -2,7 +2,7 @@ package openai
 
 import (
 	"errors"
-	"github.com/iflytek/spark-ai-go/sparkai/llms/openai/internal/openaiclient"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/openai/client/openaiclient"
 	"net/http"
 	"os"
 )

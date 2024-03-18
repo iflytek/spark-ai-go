@@ -3,7 +3,7 @@ package spark
 import (
 	"context"
 	"fmt"
-	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/internal/sparkclient"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/client/sparkclient"
 	"github.com/iflytek/spark-ai-go/sparkai/memory/file_memory"
 	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"os"

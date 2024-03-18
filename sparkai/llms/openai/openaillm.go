@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/iflytek/spark-ai-go/sparkai/callbacks"
 	"github.com/iflytek/spark-ai-go/sparkai/llms"
-	"github.com/iflytek/spark-ai-go/sparkai/llms/openai/internal/openaiclient"
+	"github.com/iflytek/spark-ai-go/sparkai/llms/openai/client/openaiclient"
 	"github.com/iflytek/spark-ai-go/sparkai/messages"
 )
 
