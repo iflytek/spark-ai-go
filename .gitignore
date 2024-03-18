@@ -1,2 +1,2 @@
 sparkai/llms/spark/internal/.env
-*.env*
+*.env
