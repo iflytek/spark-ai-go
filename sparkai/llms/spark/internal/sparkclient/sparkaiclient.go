@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/iflytek/spark-ai-go/sparkai/llms"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"net/http"
 	"net/url"
 	"strings"
@@ -38,7 +38,7 @@ type Client struct {
 	baseURL      string
 	organization string
 	wsClient     Doer
-
+	domain       string
 	// required when APIVersion
 	apiVersion      APIVersion
 	embeddingsModel string
@@ -53,11 +53,12 @@ type Doer interface {
 }
 
 // New returns a new SparkAI client.
-func New(apiKey, apiSecret, appId string, baseURL string, organization string,
+func New(domain, apiKey, apiSecret, appId string, baseURL string, organization string,
 	apiVersion string, embeddingsModel string,
 	opts ...Option,
 ) (*Client, error) {
 	c := &Client{
+		domain:          domain,
 		apiSecret:       apiSecret,
 		apiKey:          apiKey,
 		appId:           appId,
@@ -82,7 +83,7 @@ type Completion struct {
 }
 
 // CreateCompletion creates a completion.
-func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (llms.ChatMessage, error) {
+func (c *Client) CreateCompletion(ctx context.Context, r *CompletionRequest) (messages.ChatMessage, error) {
 	return c.createCompletion(ctx, r)
 
 }
@@ -120,15 +121,15 @@ type EmbeddingRequest struct {
 //}
 
 // CreateChat creates chat request.
-func (c *Client) CreateChat(ctx context.Context, r *ChatRequest) (llms.ChatMessage, error) {
+func (c *Client) CreateChat(ctx context.Context, r *ChatRequest) (messages.ChatMessage, error) {
 
 	resp, err := c.createChat(ctx, r, nil)
 	if err != nil {
 		return nil, err
 	}
 	switch resp.GetType() {
-	case llms.ChatMessageTypeAI:
-		fcMsg := resp.(llms.AIChatMessage)
+	case messages.ChatMessageTypeAI:
+		fcMsg := resp.(messages.AIChatMessage)
 		fmt.Println(fcMsg.FunctionCall.GetContent())
 	default:
 		fmt.Println(resp.GetContent())
@@ -139,7 +140,7 @@ func (c *Client) CreateChat(ctx context.Context, r *ChatRequest) (llms.ChatMessa
 }
 
 // CreateChat creates chat request.
-func (c *Client) CreateChatWithCallBack(ctx context.Context, r *ChatRequest, stream_cb func(msg llms.ChatMessage) error) (llms.ChatMessage, error) {
+func (c *Client) CreateChatWithCallBack(ctx context.Context, r *ChatRequest, stream_cb func(msg messages.ChatMessage) error) (messages.ChatMessage, error) {
 
 	resp, err := c.createChat(ctx, r, stream_cb)
 	if err != nil {

@@ -1,6 +1,9 @@
 package llms
 
-import "context"
+import (
+	"context"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
+)
 
 // CallOption is a function that configures a CallOptions.
 type CallOption func(*CallOptions)
@@ -38,33 +41,13 @@ type CallOptions struct {
 	PresencePenalty float64 `json:"presence_penalty"`
 
 	// Function defitions to include in the request.
-	Functions []FunctionDefinition `json:"functions"`
+	Functions []messages.FunctionDefinition `json:"functions"`
 	// FunctionCallBehavior is the behavior to use when calling functions.
 	//
 	// If a specific function should be invoked, use the format:
 	// `{"name": "my_function"}`
-	FunctionCallBehavior FunctionCallBehavior `json:"function_call"`
+	FunctionCallBehavior messages.FunctionCallBehavior `json:"function_call"`
 }
-
-// FunctionDefinition is a definition of a function that can be called by the model.
-type FunctionDefinition struct {
-	// Name is the name of the function.
-	Name string `json:"name"`
-	// Description is a description of the function.
-	Description string `json:"description"`
-	// Parameters is a list of parameters for the function.
-	Parameters any `json:"parameters"`
-}
-
-// FunctionCallBehavior is the behavior to use when calling functions.
-type FunctionCallBehavior string
-
-const (
-	// FunctionCallBehaviorNone will not call any functions.
-	FunctionCallBehaviorNone FunctionCallBehavior = "none"
-	// FunctionCallBehaviorAuto will call functions automatically.
-	FunctionCallBehaviorAuto FunctionCallBehavior = "auto"
-)
 
 // WithModel is an option for LLM.Call.
 func WithModel(model string) CallOption {
@@ -172,14 +155,14 @@ func WithPresencePenalty(presencePenalty float64) CallOption {
 }
 
 // WithFunctionCallBehavior will add an option to set the behavior to use when calling functions.
-func WithFunctionCallBehavior(behavior FunctionCallBehavior) CallOption {
+func WithFunctionCallBehavior(behavior messages.FunctionCallBehavior) CallOption {
 	return func(o *CallOptions) {
 		o.FunctionCallBehavior = behavior
 	}
 }
 
 // WithFunctions will add an option to set the functions to include in the request.
-func WithFunctions(functions []FunctionDefinition) CallOption {
+func WithFunctions(functions []messages.FunctionDefinition) CallOption {
 	return func(o *CallOptions) {
 		o.Functions = functions
 	}

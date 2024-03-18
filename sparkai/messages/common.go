@@ -1,4 +1,4 @@
-package llms
+package messages
 
 type Choice struct {
 	FinishReason string

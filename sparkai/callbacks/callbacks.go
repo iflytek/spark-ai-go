@@ -3,6 +3,7 @@ package callbacks
 import (
 	"context"
 	"github.com/iflytek/spark-ai-go/sparkai/llms"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 )
 
 // Handler is the interface that allows for hooking into specific parts of an
@@ -12,6 +13,8 @@ import (
 type Handler interface {
 	HandleText(ctx context.Context, text string)
 	HandleLLMStart(ctx context.Context, prompts []string)
+	HandleLLMGenerateContentStart(ctx context.Context, ms []messages.MessageContent)
+	HandleLLMGenerateContentEnd(ctx context.Context, res *messages.ContentResponse)
 	HandleLLMEnd(ctx context.Context, output llms.LLMResult)
 	HandleLLMError(ctx context.Context, err error)
 	HandleChainStart(ctx context.Context, inputs map[string]any)
@@ -20,10 +23,7 @@ type Handler interface {
 	HandleToolStart(ctx context.Context, input string)
 	HandleToolEnd(ctx context.Context, output string)
 	HandleToolError(ctx context.Context, err error)
-	//HandleAgentAction(ctx context.Context, action types.AgentAction)
-	//HandleAgentFinish(ctx context.Context, finish types.AgentFinish)
 	HandleRetrieverStart(ctx context.Context, query string)
-	//HandleRetrieverEnd(ctx context.Context, query string, documents []types.Document)
 	HandleStreamingFunc(ctx context.Context, chunk []byte)
 }
 

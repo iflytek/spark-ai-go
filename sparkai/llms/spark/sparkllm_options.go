@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	appIdEnvVarName        = "SPARKAI_APP_ID"     //nolint:gosec
-	apiKeyEnvVarName       = "SPARKAI_API_KEY"    //nolint:gosec
-	apiSecretEnvVarName    = "SPARKAI_API_SECRET" //nolint:gosec
-	sparkDomainEnvVarName  = "SPARKAI_DOMAIN"
+	AppIdEnvVarName        = "SPARKAI_APP_ID"     //nolint:gosec
+	ApiKeyEnvVarName       = "SPARKAI_API_KEY"    //nolint:gosec
+	ApiSecretEnvVarName    = "SPARKAI_API_SECRET" //nolint:gosec
+	SparkDomainEnvVarName  = "SPARKAI_DOMAIN"
 	sparkVersionEnvVarName = "SPARKAI_API_VERSION" //nolint:gosec
-	baseURLEnvVarName      = "SPARKAI_URL"         //nolint:gosec
+	BaseURLEnvVarName      = "SPARKAI_URL"         //nolint:gosec
 	organizationEnvVarName = "SPARK_ORGANIZATION"  //nolint:gosec
 )
 

@@ -3,35 +3,27 @@ package spark
 import (
 	"context"
 	"fmt"
-	"github.com/iflytek/spark-ai-go/sparkai/llms"
 	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/internal/sparkclient"
 	"github.com/iflytek/spark-ai-go/sparkai/memory/file_memory"
-	"github.com/joho/godotenv"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"os"
 	"testing"
 )
 
-func init() {
-	setupTestCase()
-}
-
-func setupTestCase() {
-	godotenv.Load(".env")
-}
-
 func TestLLMClient(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
-	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+
+	SPARK_APP_ID := ""
+	SPARK_API_KEY := ""
+	SPARK_API_SECRET := ""
+	SPARK_DOMAIN := "generalv3.5"
+	SPARK_API_BASE := "wss://spark-api.xf-yun.com/v3.5/chat"
+
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: "请你模拟詹姆斯的口吻写一篇转会消息",
 			},
@@ -47,24 +39,24 @@ func TestLLMClient(t *testing.T) {
 }
 
 func TestLLMClientStream(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: "帮我润色并简化这句话: 国内科技大厂，创业公司都在演进大模型AI Agent且AI Agent框架仍然处于发展初期，采用开源化的AIAgent演进路线有助于快速构建影响力\n",
 			},
 		},
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -76,23 +68,23 @@ func TestLLMClientStream(t *testing.T) {
 }
 
 func TestLLMFunctionCall(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: " For the case: For the video located in /usr/local/3.mp4, recognize the speech and transfer it into a script file, please choose a function to complete it",
 			},
 		},
-		Functions: []llms.FunctionDefinition{
+		Functions: []messages.FunctionDefinition{
 			{
 				Name:        "recognize_transcript_from_video",
 				Description: "recognize the speech from video and transfer into a txt file",
@@ -132,7 +124,7 @@ func TestLLMFunctionCall(t *testing.T) {
 			},
 		},
 	}
-	//_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	//_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 	//	fmt.Print(msg.GetContent())
 	//	return nil
 	//})
@@ -145,23 +137,23 @@ func TestLLMFunctionCall(t *testing.T) {
 }
 
 func TestLLMFunctionCallWithCallBack(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: " For the case: For the video located in /usr/local/3.mp4, recognize the speech and transfer it into a script file, please choose a function to complete it",
 			},
 		},
-		Functions: []llms.FunctionDefinition{
+		Functions: []messages.FunctionDefinition{
 			{
 				Name:        "recognize_transcript_from_video",
 				Description: "recognize the speech from video and transfer into a txt file",
@@ -201,7 +193,7 @@ func TestLLMFunctionCallWithCallBack(t *testing.T) {
 			},
 		},
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -212,23 +204,23 @@ func TestLLMFunctionCallWithCallBack(t *testing.T) {
 }
 
 func TestLLMFunctionCN(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: " 帮我生成一份2023ATP报表放到 /workspace目录下 ",
 			},
 		},
-		Functions: []llms.FunctionDefinition{
+		Functions: []messages.FunctionDefinition{
 			{
 				Name:        "generate_biz_report",
 				Description: "生成运营分析报表工具",
@@ -284,7 +276,7 @@ func TestLLMFunctionCN(t *testing.T) {
 			},
 		},
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -295,23 +287,23 @@ func TestLLMFunctionCN(t *testing.T) {
 }
 
 func TestLLMFunctionNest(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			&llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			&messages.GenericChatMessage{
 				Role:    "user",
 				Content: " 帮我生成一份2023ATP报表放到 /workspace目录下 ",
 			},
 		},
-		Functions: []llms.FunctionDefinition{
+		Functions: []messages.FunctionDefinition{
 			{
 				Name:        "generate_biz_report",
 				Description: "生成运营分析报表工具",
@@ -369,7 +361,7 @@ func TestLLMFunctionNest(t *testing.T) {
 			},
 		},
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -380,18 +372,18 @@ func TestLLMFunctionNest(t *testing.T) {
 }
 
 func TestLLMClientSystemMsgSingle(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: "当前你是一个辩论赛主持人角色，正在进行一场题目为大学生该不该谈恋爱的辩论",
 			},
@@ -421,7 +413,7 @@ var assistants = []string{
 	"[\"get_time\", \"get_weather\"]",
 }
 
-var weather = []llms.FunctionDefinition{
+var weather = []messages.FunctionDefinition{
 	{
 		Name:        "get_weather",
 		Description: "查询天气插件",
@@ -464,29 +456,29 @@ var weather = []llms.FunctionDefinition{
 }
 
 func TestLLMClientSystemMsg1Ground(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: systems[3],
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: users[1],
 			},
 		},
 		//Functions: weather,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -498,49 +490,49 @@ func TestLLMClientSystemMsg1Ground(t *testing.T) {
 }
 
 func TestLLMClientSystemMsg2Ground(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: "你是一个任务规划助手,请根据我提供的工具集合生成一份调用工具的规划列表，形如 [\"工具1名称\"，\"工具2名称\"]，确保数组可以被 python json.loads解析,如果无法生成请返回空",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: "帮我查询下去年今天合肥市的天气, 当前的工具有 get_weather(查询天气插件),get_time(查询当前时间)",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "assistant",
 				Content: "[\"get_time\", \"get_weather\"]",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: "帮我查询下去年今天合肥市的天气, 当前的工具有 get_weather(查询天气插件),get_time(查询当前时间)",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "function",
 				Content: "2024-01-23 13:00:33",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: "当前已经执行过工具get_time, 它返回结果是: 2024-01-25 13:00:33",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: "帮我查询下去年今天合肥市的天气, 当前的工具有 get_weather(查询天气插件),get_time(查询当前时间)",
 			},
 		},
 		Functions: weather,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -564,7 +556,7 @@ var debate_assistants = []string{
 	"[\"get_time\", \"get_weather\"]",
 }
 
-var debate_methods = []llms.FunctionDefinition{
+var debate_methods = []messages.FunctionDefinition{
 	{
 		Name:        "get_sub",
 		Description: "生成辩论观点",
@@ -640,29 +632,29 @@ var debate_methods = []llms.FunctionDefinition{
 }
 
 func TestLLMDebate1Ground(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: debate_systems[0],
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: debate_users[0],
 			},
 		},
 		Functions: debate_methods,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -674,45 +666,45 @@ func TestLLMDebate1Ground(t *testing.T) {
 }
 
 func TestLLMDebate2Ground(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: debate_systems[0],
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: debate_users[0],
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "assistant",
 				Content: "[\"gen_sub\", \"set_mode\", \"set_max_round\", \"select_speaker\", \"summary\"]",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "function",
 				Content: "gen_sub生成论题结果为: 正方: 大学生谈恋爱好， 反方: 大学生谈恋爱不好",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: "你是个辩论赛主持人，当前辩论赛议程为:\n [\"gen_sub\", \"set_mode\", \"set_max_round\", \"select_speaker\", \"summary\"],\n已经进行到 [\"gen_sub\"],请根据以上议程和已经执行过的议程，生成下一步需要调用的议程方法和参数",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: "请以大学生该不该谈恋爱为题目,开始一场1v1的3轮辩论赛",
 			},
 		},
 		Functions: debate_methods,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -723,7 +715,7 @@ func TestLLMDebate2Ground(t *testing.T) {
 
 }
 
-var train_methods = []llms.FunctionDefinition{
+var train_methods = []messages.FunctionDefinition{
 	{
 		Name:        "order_train",
 		Description: "预订火车函数",
@@ -763,29 +755,29 @@ var train_systems = []string{
 }
 
 func TestTrainOrderSystem(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Role:    "system",
 				Content: "你是一个火车票预定助手,根据提供的工具函数方法决策如何调用工具. 当用户输入不能满足工具输入要求输入时，请根据工具要求提示用户输入对应输入，并且不要为我返回函数调用方法。结束完成时回复 TERMINATE.",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Role:    "user",
 				Content: "帮我订一张火车票",
 			},
 		},
 		Functions: train_methods,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -797,23 +789,23 @@ func TestTrainOrderSystem(t *testing.T) {
 }
 
 func TestTrainOrder(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
-		Messages: []llms.ChatMessage{
-			llms.GenericChatMessage{
+		Messages: []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Name:    "",
 				Role:    "system",
 				Content: "你是一个火车票预定助手,根据提供的工具函数方法决策如何调用工具. 当用户输入不能满足工具输入要求输入时，请根据工具要求提示用户输入对应输入，并且不要为我返回函数调用方法。结束完成时回复 TERMINATE.",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Name:    "",
 				Role:    "user",
 				Content: "你是一个火车票预定助手,根据提供的工具函数方法决策如何调用工具. 当用户输入不能满足工具输入要求输入时，请根据工具要求提示用户输入对应输入，并且不要为我返回函数调用方法。结束完成时回复 TERMINATE. \n现在我的输入是: 帮我订一张火车票",
@@ -821,7 +813,7 @@ func TestTrainOrder(t *testing.T) {
 		},
 		Functions: train_methods,
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
@@ -833,23 +825,23 @@ func TestTrainOrder(t *testing.T) {
 }
 
 func TestTrainOrderMemory(t *testing.T) {
-	SPARK_API_KEY := os.Getenv(apiKeyEnvVarName)
-	SPARK_API_SECRET := os.Getenv(apiSecretEnvVarName)
-	SPARK_API_BASE := os.Getenv(baseURLEnvVarName)
-	SPARK_APP_ID := os.Getenv(appIdEnvVarName)
+	SPARK_API_KEY := os.Getenv(ApiKeyEnvVarName)
+	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
+	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
+	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(sparkDomainEnvVarName)
+	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
 	memory_files := "conversations/order.memory"
 	fm, _ := file_memory.NewChatHistoryFileStorage(memory_files)
 	hist, err := fm.Read()
 	if len(hist) == 0 {
-		hist = []llms.ChatMessage{
-			llms.GenericChatMessage{
+		hist = []messages.ChatMessage{
+			messages.GenericChatMessage{
 				Name:    "",
 				Role:    "system",
 				Content: "你是一个火车票预定助手,根据提供的工具函数方法决策如何调用工具. 当用户输入不能满足工具输入要求输入时，请根据工具要求提示用户输入对应输入，并且不要为我返回函数调用方法。结束完成时回复 TERMINATE.",
 			},
-			llms.GenericChatMessage{
+			messages.GenericChatMessage{
 				Name:    "",
 				Role:    "user",
 				Content: "你是一个火车票预定助手,根据提供的工具函数方法决策如何调用工具. 当用户输入不能满足工具输入要求输入时，请根据工具要求提示用户输入对应输入，并且不要为我返回函数调用方法。结束完成时回复 TERMINATE. \n现在我的输入是: 帮我订一张火车票",
@@ -860,14 +852,14 @@ func TestTrainOrderMemory(t *testing.T) {
 		}
 	}
 
-	_, client, _ := newClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
+	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain:    &SPARK_DOMAIN,
 		Messages:  hist,
 		Functions: train_methods,
 	}
-	resp, err := client.CreateChatWithCallBack(ctx, r, func(msg llms.ChatMessage) error {
+	resp, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})

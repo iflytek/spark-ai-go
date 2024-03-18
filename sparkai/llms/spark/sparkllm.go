@@ -5,6 +5,7 @@ import (
 	"github.com/iflytek/spark-ai-go/sparkai/callbacks"
 	"github.com/iflytek/spark-ai-go/sparkai/llms"
 	"github.com/iflytek/spark-ai-go/sparkai/llms/spark/internal/sparkclient"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 )
 
 type LLM struct {
@@ -12,11 +13,9 @@ type LLM struct {
 	client           *sparkclient.Client
 }
 
-var _ llms.LLM = (*LLM)(nil)
-
 // New returns a new Spark LLM.
 func New(opts ...Option) (*LLM, error) {
-	opt, c, err := newClient(opts...)
+	opt, c, err := NewClient(opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,9 +63,14 @@ func (o *LLM) Generate(ctx context.Context, prompts []string, options ...llms.Ca
 			}
 			return nil, err
 		}
+		chatRes := result.(*sparkclient.ChatResponse)
+
 		generations = append(generations, &llms.Generation{
-			Text:    result.GetContent(),
-			Message: result.(*llms.AIChatMessage),
+			Text: result.GetContent(),
+			Message: &messages.AIChatMessage{
+				Content:      chatRes.GetContent(),
+				FunctionCall: chatRes.FunctionCall,
+			},
 		})
 	}
 

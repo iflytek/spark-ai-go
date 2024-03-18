@@ -1,7 +1,7 @@
 package file_memory
 
 import (
-	"github.com/iflytek/spark-ai-go/sparkai/llms"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"os"
 )
 import (
@@ -20,7 +20,7 @@ func NewChatHistoryFileStorage(filename string) (*ChatHistoryFileStorage, error)
 	return &ChatHistoryFileStorage{file: file}, nil
 }
 
-func (ls *ChatHistoryFileStorage) Append(log llms.ChatMessage) error {
+func (ls *ChatHistoryFileStorage) Append(log messages.ChatMessage) error {
 	logData, err := json.Marshal(log)
 	if err != nil {
 		return err
@@ -33,15 +33,15 @@ func (ls *ChatHistoryFileStorage) Append(log llms.ChatMessage) error {
 	return nil
 }
 
-func (ls *ChatHistoryFileStorage) Read() ([]llms.ChatMessage, error) {
-	var logs []llms.ChatMessage
+func (ls *ChatHistoryFileStorage) Read() ([]messages.ChatMessage, error) {
+	var logs []messages.ChatMessage
 	file, err := os.Open(ls.file.Name())
 	if err != nil {
 		return nil, err
 	}
 	decoder := json.NewDecoder(file)
 	for {
-		var log llms.GenericChatMessage
+		var log messages.GenericChatMessage
 		if err := decoder.Decode(&log); err != nil {
 			break // 读取完所有日志或者发生错误退出循环
 		}

@@ -1,4 +1,4 @@
-package llms
+package messages
 
 import (
 	"encoding/json"
@@ -190,3 +190,23 @@ func getMessageRole(m ChatMessage, humanPrefix, aiPrefix string) (string, error)
 	}
 	return role, nil
 }
+
+// FunctionDefinition is a definition of a function that can be called by the model.
+type FunctionDefinition struct {
+	// Name is the name of the function.
+	Name string `json:"name"`
+	// Description is a description of the function.
+	Description string `json:"description"`
+	// Parameters is a list of parameters for the function.
+	Parameters any `json:"parameters"`
+}
+
+// FunctionCallBehavior is the behavior to use when calling functions.
+type FunctionCallBehavior string
+
+const (
+	// FunctionCallBehaviorNone will not call any functions.
+	FunctionCallBehaviorNone FunctionCallBehavior = "none"
+	// FunctionCallBehaviorAuto will call functions automatically.
+	FunctionCallBehaviorAuto FunctionCallBehavior = "auto"
+)

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/iflytek/spark-ai-go/log"
-	"github.com/iflytek/spark-ai-go/sparkai/llms"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -24,13 +24,13 @@ var ErrContentExclusive = errors.New("only one of Content / MultiContent allowed
 
 // ChatRequest is a request to complete a chat completion..
 type ChatRequest struct {
-	Domain      *string                   `json:"domain"`
-	Messages    []llms.ChatMessage        `json:"messages"`
-	Temperature *float64                  `json:"temperature,omitempty"`
-	TopK        *int64                    `json:"top_p,omitempty"`
-	MaxTokens   *int64                    `json:"max_tokens,omitempty"`
-	Audit       *string                   `json:"audit,omitempty"`
-	Functions   []llms.FunctionDefinition `json:"functions,omitempty"`
+	Domain      *string                       `json:"domain"`
+	Messages    []messages.ChatMessage        `json:"messages"`
+	Temperature *float64                      `json:"temperature,omitempty"`
+	TopK        *int64                        `json:"top_p,omitempty"`
+	MaxTokens   *int64                        `json:"max_tokens,omitempty"`
+	Audit       *string                       `json:"audit,omitempty"`
+	Functions   []messages.FunctionDefinition `json:"functions,omitempty"`
 
 	//// Function definitions to include in the request.
 	//// FunctionCallBehavior is the behavior to use when calling functions.
@@ -58,11 +58,11 @@ type ChatMessage struct { //nolint:musttag
 	//Name string
 
 	// FunctionCall represents a function call to be made in the message.
-	FunctionCall *llms.FunctionCall
+	FunctionCall *messages.FunctionCall
 }
 
-func (m ChatMessage) GetType() llms.ChatMessageType {
-	return llms.ChatMessageType(m.Role)
+func (m ChatMessage) GetType() messages.ChatMessageType {
+	return messages.ChatMessageType(m.Role)
 }
 
 func (m ChatMessage) GetContent() string {
@@ -70,9 +70,9 @@ func (m ChatMessage) GetContent() string {
 }
 func (m ChatMessage) MarshalJSON() ([]byte, error) {
 	msg := struct {
-		Role         string             `json:"role"`
-		Content      string             `json:"content"`
-		FunctionCall *llms.FunctionCall `json:"function_call"`
+		Role         string                 `json:"role"`
+		Content      string                 `json:"content"`
+		FunctionCall *messages.FunctionCall `json:"function_call"`
 	}{
 		Role:         m.Role,
 		Content:      m.Content,
@@ -84,9 +84,9 @@ func (m ChatMessage) MarshalJSON() ([]byte, error) {
 
 func (m *ChatMessage) UnmarshalJSON(data []byte) error {
 	msg := struct {
-		Role         string             `json:"role"`
-		Content      string             `json:"content"`
-		FunctionCall *llms.FunctionCall `json:"function_call"`
+		Role         string                 `json:"role"`
+		Content      string                 `json:"content"`
+		FunctionCall *messages.FunctionCall `json:"function_call"`
 	}{}
 	err := json.Unmarshal(data, &msg)
 	if err != nil {
@@ -113,9 +113,9 @@ type ChatUsage struct {
 // ChatResponse is a response to a chat request.
 type ChatResponse struct {
 	//Choices []*ChatChoice `json:"choices,omitempty"`
-	Role         string             `json:"role"`
-	Content      string             `json:"content,omitempty"`
-	FunctionCall *llms.FunctionCall `json:"function_call"`
+	Role         string                 `json:"role"`
+	Content      string                 `json:"content,omitempty"`
+	FunctionCall *messages.FunctionCall `json:"function_call"`
 	Usage        struct {
 		CompletionTokens float64 `json:"completion_tokens,omitempty"`
 		PromptTokens     float64 `json:"prompt_tokens,omitempty"`
@@ -123,11 +123,11 @@ type ChatResponse struct {
 	} `json:"usage,omitempty"`
 }
 
-func (c *ChatResponse) GetType() llms.ChatMessageType {
+func (c *ChatResponse) GetType() messages.ChatMessageType {
 	if c.FunctionCall != nil {
-		return llms.ChatMessageTypeFunction
+		return messages.ChatMessageTypeFunction
 	}
-	return llms.ChatMessageType(c.Role)
+	return messages.ChatMessageType(c.Role)
 
 }
 
@@ -186,7 +186,7 @@ type FunctionCall struct {
 	Arguments string `json:"arguments"`
 }
 
-func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(msg llms.ChatMessage) error) (llms.ChatMessage, error) {
+func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(msg messages.ChatMessage) error) (messages.ChatMessage, error) {
 
 	// Build request payload
 
@@ -215,7 +215,7 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(m
 	var answer = ""
 	var code int
 	// Parse response
-	var response llms.ChatMessage
+	var response messages.ChatMessage
 
 	//获取返回的数据
 	for {
@@ -225,7 +225,7 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(m
 			break
 		}
 
-		var sparkResp = llms.SparkResponse{}
+		var sparkResp = messages.SparkResponse{}
 		err1 := json.Unmarshal(msg, &sparkResp)
 		if err1 != nil {
 			return nil, errors.New(err1.Error())
@@ -249,12 +249,12 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(m
 		role := text[0].Role
 		fc := text[0].FunctionCall
 		if fc != nil {
-			response = llms.AIChatMessage{
+			response = messages.AIChatMessage{
 				Content:      fc.GetContent(),
 				FunctionCall: fc,
 			}
 		} else {
-			response = llms.GenericChatMessage{
+			response = messages.GenericChatMessage{
 				Content: content,
 				Role:    role,
 			}

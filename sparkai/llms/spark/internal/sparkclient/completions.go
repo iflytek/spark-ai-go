@@ -2,17 +2,17 @@ package sparkclient
 
 import (
 	"context"
-	"github.com/iflytek/spark-ai-go/sparkai/llms"
+	"github.com/iflytek/spark-ai-go/sparkai/messages"
 )
 
 // CompletionRequest is a request to complete a completion.
 type CompletionRequest struct {
-	Prompt      string                    `json:"prompt"`
-	Temperature float64                   `json:"temperature,omitempty"`
-	MaxTokens   int64                     `json:"max_tokens,omitempty"`
-	N           int                       `json:"n,omitempty"`
-	TopK        int64                     `json:"top_k,omitempty"`
-	Functions   []llms.FunctionDefinition `json:"functions"`
+	Prompt      string                        `json:"prompt"`
+	Temperature float64                       `json:"temperature,omitempty"`
+	MaxTokens   int64                         `json:"max_tokens,omitempty"`
+	N           int                           `json:"n,omitempty"`
+	TopK        int64                         `json:"top_k,omitempty"`
+	Functions   []messages.FunctionDefinition `json:"functions"`
 }
 
 type CompletionResponse struct {
@@ -31,7 +31,7 @@ type CompletionResponse struct {
 		PromptTokens     float64 `json:"prompt_tokens,omitempty"`
 		TotalTokens      float64 `json:"total_tokens,omitempty"`
 	} `json:"usage,omitempty"`
-	FunctionCall *llms.FunctionCall `json:"function_call"`
+	FunctionCall *messages.FunctionCall `json:"function_call"`
 }
 
 type errorMessage struct {
@@ -44,17 +44,17 @@ type errorMessage struct {
 // 生成参数
 func (c *Client) constructSparkReq(appid string, req *ChatRequest) map[string]interface{} { // 根据实际情况修改返回的数据结构和字段名
 
-	messages := req.Messages
-	if req.Domain == nil {
+	msgs := req.Messages
+	if req.Domain == nil || *req.Domain == "" {
 		req.Domain = &defaultDomain
 	}
-	if req.Temperature == nil {
+	if req.Temperature == nil || *req.Temperature == 0 {
 		req.Temperature = &defaultTemperature
 	}
-	if req.TopK == nil {
+	if req.TopK == nil || *req.TopK == 0 {
 		req.TopK = &defaultTopK
 	}
-	if req.MaxTokens == nil {
+	if req.MaxTokens == nil || *req.MaxTokens == 0 {
 		req.MaxTokens = &defaultMaxTokens
 	}
 	data := map[string]interface{}{ // 根据实际情况修改返回的数据结构和字段名
@@ -72,9 +72,9 @@ func (c *Client) constructSparkReq(appid string, req *ChatRequest) map[string]in
 		},
 		"payload": map[string]interface{}{ // 根据实际情况修改返回的数据结构和字段名
 			"message": map[string]interface{}{ // 根据实际情况修改返回的数据结构和字段名
-				"text": messages, // 根据实际情况修改返回的数据结构和字段名
+				"text": msgs, // 根据实际情况修改返回的数据结构和字段名
 			},
-			"functions": map[string][]llms.FunctionDefinition{
+			"functions": map[string][]messages.FunctionDefinition{
 				"text": req.Functions,
 			},
 		},
@@ -83,10 +83,11 @@ func (c *Client) constructSparkReq(appid string, req *ChatRequest) map[string]in
 }
 
 // nolint:lll
-func (c *Client) createCompletion(ctx context.Context, payload *CompletionRequest) (llms.ChatMessage, error) {
+func (c *Client) createCompletion(ctx context.Context, payload *CompletionRequest) (messages.ChatMessage, error) {
 	return c.createChat(ctx, &ChatRequest{
-		Messages: []llms.ChatMessage{
-			&(llms.GenericChatMessage{Role: "user", Content: payload.Prompt}),
+		Domain: &c.domain,
+		Messages: []messages.ChatMessage{
+			&(messages.GenericChatMessage{Role: "user", Content: payload.Prompt}),
 		},
 		Temperature: &payload.Temperature,
 		TopK:        &payload.TopK,
