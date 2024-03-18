@@ -59,8 +59,12 @@ func TestLLMClientStream(t *testing.T) {
 	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
 	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
 	SPARK_DOMAIN := "10245"
-	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
-	_, client, _ := spark.NewClient(spark.WithBaseURL(SPARK_API_BASE), spark.WithApiKey(SPARK_API_KEY), spark.WithApiSecret(SPARK_API_SECRET), spark.WithAppId(SPARK_APP_ID), spark.WithAPIDomain(SPARK_DOMAIN))
+	SPARK_DOMAIN = ""
+	_, client, err := spark.NewClient(spark.WithBaseURL(SPARK_API_BASE), spark.WithApiKey(SPARK_API_KEY), spark.WithApiSecret(SPARK_API_SECRET), spark.WithAppId(SPARK_APP_ID), spark.WithAPIDomain(SPARK_DOMAIN))
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	ctx := context.Background()
 	r := &sparkclient.ChatRequest{
 		Domain: &SPARK_DOMAIN,
@@ -71,7 +75,7 @@ func TestLLMClientStream(t *testing.T) {
 			},
 		},
 	}
-	_, err := client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
+	_, err = client.CreateChatWithCallBack(ctx, r, func(msg messages.ChatMessage) error {
 		fmt.Print(msg.GetContent())
 		return nil
 	})
