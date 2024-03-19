@@ -25,12 +25,6 @@
 - [x] Python版本[SDK](https://github.com/iflytek/spark-ai-python/)进行中
 
 
-Install from source with:
-
-```sh
-python setup.py install
-```
-
 ## 如何使用
 
 ### 示例代码
