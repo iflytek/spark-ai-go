@@ -58,7 +58,6 @@ func TestLLMClientStream(t *testing.T) {
 	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
 	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
 	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
-	SPARK_DOMAIN := "10245"
 	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
 	_, client, err := spark.NewClient(spark.WithBaseURL(SPARK_API_BASE), spark.WithApiKey(SPARK_API_KEY), spark.WithApiSecret(SPARK_API_SECRET), spark.WithAppId(SPARK_APP_ID), spark.WithAPIDomain(SPARK_DOMAIN))
 	if err != nil {
@@ -94,7 +93,6 @@ func TestLLMClientStream(t *testing.T) {
 	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
 	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
 	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
-	SPARK_DOMAIN := "10245"
 	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
 	_, client, err := spark.NewClient(spark.WithBaseURL(SPARK_API_BASE), spark.WithApiKey(SPARK_API_KEY), spark.WithApiSecret(SPARK_API_SECRET), spark.WithAppId(SPARK_APP_ID), spark.WithAPIDomain(SPARK_DOMAIN))
 	if err != nil {
@@ -125,7 +123,7 @@ func TestLLMClientStream(t *testing.T) {
 其中可以在CreateWithCallBack传入一个func用于回调处理流式数据
 
 ### FunctionCall功能
-比如将 mulitply 乘法函数定义传入 ChatSparkLLM
+
 
 ```golang
 func TestLLMFunctionCN(t *testing.T) {
@@ -133,7 +131,6 @@ func TestLLMFunctionCN(t *testing.T) {
 	SPARK_API_SECRET := os.Getenv(ApiSecretEnvVarName)
 	SPARK_API_BASE := os.Getenv(BaseURLEnvVarName)
 	SPARK_APP_ID := os.Getenv(AppIdEnvVarName)
-	SPARK_DOMAIN := "10245"
 	SPARK_DOMAIN = os.Getenv(SparkDomainEnvVarName)
 	_, client, _ := NewClient(WithBaseURL(SPARK_API_BASE), WithApiKey(SPARK_API_KEY), WithApiSecret(SPARK_API_SECRET), WithAppId(SPARK_APP_ID), WithAPIDomain(SPARK_DOMAIN))
 	ctx := context.Background()
