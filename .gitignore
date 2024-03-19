@@ -1,2 +1,3 @@
 sparkai/llms/spark/internal/.env
 *.env
+.idea
