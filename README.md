@@ -1,10 +1,10 @@
-# 讯飞星火大模型接入库 (spark-ai-python)
+# 讯飞星火大模型接入库 (spark-ai-go)
 
 本Go SDK库帮助用户更快体验讯飞星火大模型
 
 ## 项目地址
 
-* Github: [https://github.com/iflytek/spark-ai-python](https://github.com/iflytek/spark-ai-python)
+* Github: [https://github.com/iflytek/spark-ai-go](https://github.com/iflytek/spark-ai-python)
   欢迎点赞，star
 
 ## 前言
@@ -22,7 +22,7 @@
 
 - [x] 极简的接入,快速调用讯飞星火大模型
 - [ ] LLM类统一接口，快速切换业界大模型
-- [ ] Golang版本[SDK](https://github.com/iflytek/spark-ai-go/)进行中
+- [x] Python版本[SDK](https://github.com/iflytek/spark-ai-python/)进行中
 
 
 Install from source with:
