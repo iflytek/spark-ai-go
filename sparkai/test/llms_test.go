@@ -41,7 +41,8 @@ func TestSpark(t *testing.T) {
 		spark.WithBaseURL(SPARK_API_BASE))
 
 	ctx := context.Background()
-	g, err := llm.Generate(ctx, []string{"帮我润色并简化这句话: 国内科技大厂，创业公司都在演进大模型AI Agent且AI Agent框架仍然处于发展初期，采用开源化的AIAgent演进路线有助于快速构建影响力\n", "帮我赞扬一下库里的表现"})
+	ctx1 := context.WithValue(ctx, "app_info", "ShellSpark")
+	g, err := llm.Generate(ctx1, []string{"帮我润色并简化这句话: 国内科技大厂，创业公司都在演进大模型AI Agent且AI Agent框架仍然处于发展初期，采用开源化的AIAgent演进路线有助于快速构建影响力\n", "帮我赞扬一下库里的表现"})
 
 	if err != nil {
 		fmt.Print(err.Error())
