@@ -198,7 +198,7 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(m
 		HandshakeTimeout: 5 * time.Second,
 	}
 	//握手并建立websocket 连接
-	conn, resp, err := d.Dial(c.assembleAuthUrl1(c.baseURL, c.apiKey, c.apiSecret), nil)
+	conn, resp, err := d.Dial(c.assembleAuthUrl1(c.baseURL, c.apiKey, c.apiSecret), map[string][]string{"User-Agent": []string{"SparkAISdk/golang"}})
 	if err != nil {
 		return nil, errors.New(err.Error())
 
