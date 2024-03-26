@@ -84,12 +84,6 @@ func (c *Client) constructSparkReq(appid string, req *ChatRequest) map[string]in
 
 // nolint:lll
 func (c *Client) createCompletion(ctx context.Context, payload *CompletionRequest) (messages.ChatMessage, error) {
-	ai := ctx.Value("app_info")
-	app_info := ""
-	if ai != nil {
-		app_info = ai.(string)
-	}
-
 	return c.createChat(ctx, &ChatRequest{
 		Domain: &c.domain,
 		Messages: []messages.ChatMessage{
@@ -99,6 +93,5 @@ func (c *Client) createCompletion(ctx context.Context, payload *CompletionReques
 		TopK:        &payload.TopK,
 		MaxTokens:   &payload.MaxTokens,
 		Functions:   payload.Functions,
-		AppInfo:     &app_info,
 	}, nil)
 }

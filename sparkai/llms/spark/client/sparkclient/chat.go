@@ -31,7 +31,6 @@ type ChatRequest struct {
 	MaxTokens   *int64                        `json:"max_tokens,omitempty"`
 	Audit       *string                       `json:"audit,omitempty"`
 	Functions   []messages.FunctionDefinition `json:"functions,omitempty"`
-	AppInfo     *string                       `json:"app_info,omitempty"`
 
 	//// Function definitions to include in the request.
 	//// FunctionCallBehavior is the behavior to use when calling functions.
@@ -198,8 +197,13 @@ func (c *Client) createChat(ctx context.Context, payload *ChatRequest, cb func(m
 	d := websocket.Dialer{
 		HandshakeTimeout: 5 * time.Second,
 	}
+	ua_str := ""
+	user_agent := ctx.Value("user_agent")
+	if user_agent != nil {
+		ua_str = user_agent.(string)
+	}
 	//握手并建立websocket 连接
-	conn, resp, err := d.Dial(c.assembleAuthUrl1(c.baseURL, c.apiKey, c.apiSecret), map[string][]string{"User-Agent": []string{fmt.Sprintf("SparkAISdk/golang %s", *(payload.AppInfo))}})
+	conn, resp, err := d.Dial(c.assembleAuthUrl1(c.baseURL, c.apiKey, c.apiSecret), map[string][]string{"User-Agent": []string{fmt.Sprintf("SparkAISdk/golang %s", ua_str)}})
 	if err != nil {
 		return nil, errors.New(err.Error())
 
